@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
-
 import { useMutation, useQuery } from '@apollo/client';
 import { QUERY_ME } from '../utils/query';
 import { SAVE_BOOK } from '../utils/mutation';
-
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
 
@@ -19,26 +17,18 @@ const SearchBooks = () => {
       savedBookIds.push(data.me.savedBooks[i].bookId);
     }
   }
-
   const [saveBook, {error, otherData}] = useMutation(SAVE_BOOK);
-
-
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-
     if (!searchInput) {
       return false;
     }
-
     try {
       const response = await searchGoogleBooks(searchInput);
-
       if (!response.ok) {
         throw new Error('something went wrong!');
       }
-
       const { items } = await response.json();
-
       const bookData = items.map((book) => ({
         bookId: book.id,
         authors: book.volumeInfo.authors || ['No author to display'],
@@ -46,7 +36,6 @@ const SearchBooks = () => {
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
       }));
-
       setSearchedBooks(bookData);
       setSearchInput('');
     } catch (err) {
@@ -56,11 +45,9 @@ const SearchBooks = () => {
 
   const handleSaveBook = async (bookId) => {
     const bookSaving = searchedBooks.find((book) => book.bookId === bookId);
-
     if (!Auth.loggedIn) {
       return false;
     }
-
     try {
       const { bookData } = await saveBook({
         variables: { ...bookSaving, link: bookSaving.image },
@@ -70,7 +57,6 @@ const SearchBooks = () => {
       console.error(err);
     }
   };
-
   return (
     <>
       <Jumbotron fluid className='text-light bg-dark'>
@@ -97,7 +83,6 @@ const SearchBooks = () => {
           </Form>
         </Container>
       </Jumbotron>
-
       <Container>
         <h2>
           {searchedBooks.length
